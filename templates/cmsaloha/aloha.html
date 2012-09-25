@@ -1,0 +1,57 @@
+{% load sekizai_tags %}
+
+{% if request.toolbar.show_toolbar %}
+
+{% addtoblock "js" %}
+<script src="{{ STATIC_URL }}cmsaloha/js/require.js"></script>
+{% endaddtoblock %}
+{% addtoblock "js" %}
+<script src="{{ STATIC_URL }}cmsaloha/js/aloha.js" data-aloha-plugins="common/ui,common/format,common/highlighteditables,common/link,common/image" ></script>
+
+<script type="text/javascript">
+  Aloha.ready( function() {console.log("activate");
+    // activate aloha on these fields:
+    Aloha.jQuery('.alohaeditable').aloha();
+    
+    // on click, show the save button:
+    $('form.aloha').click(function() {
+      $(this).find('input[name="save-content"]').show();
+      });
+    // on clicking save, put the content of the div into an input and POST it
+    $('form.aloha input[name="save-content"]').click(function () {
+      console.log("clicked");
+      var thisform = $(this).parent();
+      var hidden_content = thisform.find('input[name="content"]')
+      hidden_content.val(thisform.find('.alohaeditable').html());
+      Aloha.jQuery.post("alohapost",$(thisform).serialize());
+      console.log("done");
+      });
+});
+</script>
+
+{% endaddtoblock %}
+
+
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{{ STATIC_URL }}cmsaloha/css/aloha.css" type="text/css">
+{% endaddtoblock %}
+
+<form class="aloha" method="post" action="#">
+  <div class="alohaeditable">
+    {{ body|safe }}
+  </div>
+  {% csrf_token %}
+     <input type="submit" style="display: none" value=""/>
+     <input type="button" name="save-content" style="display: none;" value="Save" />
+     <input type="hidden" class="content" name="content"/>
+</form>
+
+
+{% else %}
+
+<div>
+{{body|safe}}
+</div>
+
+{% endif %}
