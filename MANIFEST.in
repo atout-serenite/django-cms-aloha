@@ -1,0 +1,5 @@
+recursive-include cmsaloha/static *
+recursive-include cmsaloha/templates *.html
+include COPYING
+include LICENSE
+include *.py *.txt *.rst
